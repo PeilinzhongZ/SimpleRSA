@@ -55,16 +55,18 @@ class RSA:
         return x
 
     def encrypt(self, m):
-        return pow(m, self.e, self.n)
+        cipher = [pow(ord(char), self.e, self.n) for char in m]
+        return cipher
 
     def decrypt(self, c):
-        return pow(c, self.d, self.n)
+        message = [chr(pow(char, self.d, self.n)) for char in c]
+        return ''.join(message)
 
 rsa = RSA()
-m = 1234123
+m = 'asdafasdf'
+print(m)
 rsa.generateKeys()
 c = rsa.encrypt(m)
-d = rsa.decrypt(c)
-print(m)
 print(c)
+d = rsa.decrypt(c)
 print(d)
