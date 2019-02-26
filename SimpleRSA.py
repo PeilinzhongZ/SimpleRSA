@@ -3,57 +3,68 @@ import random
 
 class RSA:
     def __init__(self):
-        self.p, self.q = __generatePrimes()
+        self.p = 0
+        self.q = 0
         self.e = 0
         self.d = 0
-        self.n = self.p * self.q
+        self.n = 0
 
-    def __generatePrimes():
-        n_length = 1024
+    def generatePrimes(self):
+        n_length = 128
         while True:
             p = number.getPrime(n_length)
             q = number.getPrime(n_length)
             if p != q:
-                return p,q
+                break
+        self.p = p
+        self.q = q
 
-    def gcd(a,b):
-        """Compute the greatest common divisor of a and b"""
+    def gcd(self,a,b):
         while b > 0:
             a, b = b, a % b
-            return a
+        return a
 
-    def lcm(a, b):
-        """Compute the lowest common multiple of a and b"""
-        return a * b / gcd(a, b)
+    def generateKeys(self):
+        self.generatePrimes()
+        self.n = self.p * self.q
+        phi = (self.p - 1) * (self.q - 1)
+        e = random.randrange(1, phi)
+        g = self.gcd(e, phi)
+        while g != 1:
+            e = random.randrange(1, phi)
+            g = self.gcd(e, phi)
+        self.e = e
+        self.d = self.modInverse(self.e, phi)
 
-    def __generateKeys(self):
-        phi = lcm(self.p, self.q)
-        self.e = random.randint(2, tn - 1)
-        self.d = __multiplicative_inverse(self.e, phi)
-
-    def __multiplicative_inverse(e, phi):
-        d = 0
-        x1 = 0
-        x2 = 1
-        y1 = 1
-        temp_phi = phi
-
-        while e > 0:
-            temp1 = temp_phi/e
-            temp2 = temp_phi - temp1 * e
-            temp_phi = e
-            e = temp2
-            x = x2- temp1* x1
-            y = d - temp1 * y1
-            x2 = x1
-            x1 = x
-            d = y1
-            y1 = y
-            if temp_phi == 1:
-                return d + phi
+    def modInverse(self, a, m):
+        m0 = m
+        y = 0
+        x = 1
+        if (m == 1):
+            return 0
+        while (a > 1):
+            q = a // m
+            t = m
+            m = a % m
+            a = t
+            t = y
+            y = x - q * y
+            x = t
+        if (x < 0):
+            x = x + m0
+        return x
 
     def encrypt(self, m):
         return pow(m, self.e, self.n)
 
     def decrypt(self, c):
         return pow(c, self.d, self.n)
+
+rsa = RSA()
+m = 1234123
+rsa.generateKeys()
+c = rsa.encrypt(m)
+d = rsa.decrypt(c)
+print(m)
+print(c)
+print(d)
